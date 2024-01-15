@@ -15,7 +15,7 @@ app.use(
 app.use(express.json())
 
 // rotas da API
-const router = require('./routes/routes')
+const router = require('./Routes/routes')
 
 app.use( router)
 
