@@ -1,0 +1,8 @@
+{
+  "name": "Server",
+  "version": "1.0.0",
+  "description": "Faturas moveis Server",
+  "main": "index.js",
+  "author": "Kevin Machava",
+  "license": "MIT"
+}
