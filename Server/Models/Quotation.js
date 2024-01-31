@@ -8,3 +8,4 @@ export default class Quotation {
     }
   }
   
+  module.exports = Quotation

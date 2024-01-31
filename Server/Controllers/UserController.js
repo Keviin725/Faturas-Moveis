@@ -1,6 +1,52 @@
 import User from "../Models/User";
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
 
 class UserController {
+
+    async login(req, res) {
+        try {
+            const { email, password } = req.body
+
+            //validations
+            if (!email) {
+                return res.status(422).json({ error: 'O email e obrigatorio' })
+
+            }
+            if (!password) {
+                return res.status(422).json({ error: 'A senha e obrigatoria' })
+
+            }
+            // Verificar se o user existe
+            const user = await User.findOne({ email: email })
+
+            if (!user) {
+                return res.status(422).json({ error: 'user nao encontrado' })
+            }
+
+            // password validation
+            const verifyPassword = await bcrypt.compare(password, user.password)
+
+            if (!verifyPassword) {
+                return res.status(404).json({ message: 'Password Incorreta' })
+            }
+
+
+            const secret = process.env.SECRET
+            const token = jwt.sign({
+                id: user._id
+            }, secret)
+
+            res.status(200).json(token)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({
+                message: 'Aconteceu um erro no servidor, tente novamente mais tarde!'
+            })
+        }
+    }
 
     async create(req, res) {
         try {
@@ -9,6 +55,13 @@ class UserController {
             // Validações
             if (!username || !email) {
                 return res.status(422).json({ error: 'Todos os campos são obrigatórios' });
+            }
+
+            // Verificar se o user existe
+            const userExists = await User.findOne({ email: email })
+
+            if (userExists) {
+                return res.status(422).json({ error: 'Este email ja existe, utilize outro' })
             }
 
             const user = await User.create({

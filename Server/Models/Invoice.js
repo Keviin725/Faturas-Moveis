@@ -6,3 +6,5 @@ export default class Invoice {
       this.items = items;
     }
   }
+
+module.exports = Invoice

@@ -1,102 +1,49 @@
 require('dotenv').config()
 const router = require('express').Router()
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const {InvoiceController} = require('../Controllers/InvoiceController')
+const {ReceiptController} = require('../Controllers/ReceiptController')
+const {QuotationController} = require('../Controllers/QuotationController')
+const { UserController } = require('../Controllers/UserController')
+
 
 // criacao do user
-router.post('/auth/register', async(req, res) =>{
-
-    //req.body
-    const{name, email, password, confirmPassword} = req.body
-
-    //Validations
-    if(!name){
-        return res.status(422).json({error: 'O nome e obrigatorio'})
-        
-    }
-    if(!email){
-        return res.status(422).json({error: 'O email e obrigatorio'})
-        
-    }
-    
-    if(!password){
-        return res.status(422).json({error: 'A senha e obrigatoria'})
-        
-    }
-    if (password !== confirmPassword) {
-        return res.status(422).json({error: 'As senhas devem ser iguais'})
-    }
-
-    // Verificar se o user existe
-    const userExists = await User.findOne({ email: email })
-
-    if (userExists) {
-        return res.status(422).json({error: 'Este email ja existe, utilize outro'})
-    }
-
-    // Criar senha
-    const salt = await bcrypt.genSalt(12)
-    const passwordHash = await bcrypt.hash(password, salt)
-    console.log(passwordHash)
-    
-    // objeto que recebe o corpo da requisicao
-    const person = new User({
-        name,
-        email,
-        password: passwordHash,
-    })
-
-    // create
-    try{
-        await person.save()
-        res.status(201).json({message: 'User Criado com sucesso'})
-
-    }catch(error){
-        res.status(500).json({error: error})
-    }
-
-})
-
+router.post('/auth/register', UserController.create)
 //Login
-router.post('/auth/login', async(req, res) =>{
+router.post('/auth/login', UserController.login)
+router.get('/users', UserController.index)
 
-    const{email, password} = req.body
-    
-    //validations
-    if(!email){
-        return res.status(422).json({error: 'O email e obrigatorio'})
-        
-    }
-    if(!password){
-        return res.status(422).json({error: 'A senha e obrigatoria'})
-        
-    }
-    // Verificar se o user existe
-    const user = await User.findOne({ email: email })
+// Criacao de uma fatura
+router.post('/invoice/create', InvoiceController.create)
+// Buscar uma fatura
+router.get('/invoice/:id', InvoiceController.show)
+// Atualizar uma fatura
+router.put('/invoice/:id', InvoiceController.update)
+// Deletar uma fatura
+router.delete('/invoice/:id', InvoiceController.delete)
+router.get('/invoice', InvoiceController.index)
 
-    if (!user) {
-        return res.status(422).json({error: 'user nao encontrado'})
-    }
+// Criacao de um recibo
+router.post('/receipt/create', ReceiptController.create)
+// Buscar um recibo
+router.get('/receipt/:id', ReceiptController.show)
+// Atualizar um recibo
+router.put('/receipt/:id', ReceiptController.update)
+// Deletar um recibo
+router.delete('/receipt/:id', ReceiptController.delete)
+router.get('/receipt', ReceiptController.index)
 
-    // password validation
-    const verifyPassword = await bcrypt.compare(password, user.password)
+// Criacao de uma cotacao
+router.post('/quotation/create', QuotationController.create)
+// Buscar uma cotacao
+router.get('/quotation/:id', QuotationController.show)
+// Atualizar uma cotacao
+router.put('/quotation/:id', QuotationController.update)
+// Deletar uma cotacao
+router.delete('/quotation/:id', QuotationController.delete)
+router.get('/quotation', QuotationController.index)
 
-    if(!verifyPassword){
-        return res.status(404).json({message: 'Password Incorreta'})
-    }
 
-    try {
-        const secret = process.env.SECRET
-        const token = jwt.sign({
-            id: user._id
-        }, secret)
 
-        res.status(200).json(token)
-        
-    } catch (error) {
-       console.log(error)
-       res.status(500).json({
-        message: 'Aconteceu um erro no servidor, tente novamente mais tarde!'
-       }) 
-    }
-})
+
+
+module.exports = router

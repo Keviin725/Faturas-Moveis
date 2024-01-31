@@ -5,3 +5,5 @@ export default class InvoiceItem {
       this.unitPrice = unitPrice;
     }
   }
+
+module.exports = InvoiceItem

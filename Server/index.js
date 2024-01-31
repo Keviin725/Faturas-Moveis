@@ -2,7 +2,7 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
-const app = express
+const app = express()
 
 // Ler o JSON / midddlewares
 app.use(
@@ -33,6 +33,3 @@ mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.w9z9nnv.mongo
     app.listen(3000)
 })
 .catch((err) => console.log(err))
-
-
-roNmAtQlkwUSAi9w
