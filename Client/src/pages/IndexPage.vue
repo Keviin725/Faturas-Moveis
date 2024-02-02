@@ -28,14 +28,7 @@
           <p class="text-h6">{{ statistic.value }}</p>
           <p>{{ statistic.label }}</p>
         </q-card>
-        <q-card flat bordered class="stat-card" v-for="statistic in statistics" :key="statistic.id">
-          <p class="text-h6">{{ statistic.value }}</p>
-          <p>{{ statistic.label }}</p>
-        </q-card>
-        <q-card flat bordered class="stat-card" v-for="statistic in statistics" :key="statistic.id">
-          <p class="text-h6">{{ statistic.value }}</p>
-          <p>{{ statistic.label }}</p>
-        </q-card>
+      
       </div>
     </div>
 
@@ -77,10 +70,14 @@ export default {
       showWelcomeCard: true,
       recentInvoices: [
         { id: 1, name: 'Fatura 1', date: '12 Jan 2024' },
+        { id: 2, name: 'Fatura 2', date: '12 Jan 2024' },
+        { id: 3, name: 'Fatura 3', date: '12 Jan 2024' },
         // Adicione mais faturas conforme necessário
       ],
       statistics: [
         { id: 1, value: 100, label: 'Total de Faturas' },
+        { id: 2, value: 100, label: 'Total de Recibos' },
+        { id: 3, value: 100, label: 'Total de Cotacoes' },
         // Adicione mais estatísticas conforme necessário
       ],
       pendingTasks: [
