@@ -2,17 +2,15 @@
   <q-page class="q-pa-sm">
 
     <!-- Seção de Visão Geral das Faturas -->
-    <div>
-      <h2 class="text-h6">Visão Geral das Faturas</h2>
-      <p>Total de Faturas: {{ invoiceStats.total }}</p>
-      <p>Valor Médio das Faturas: {{ invoiceStats.average }}</p>
-
+    <div class="invoice-overview">
+      <h2 class="text-h6 title">Visão Geral das Faturas <q-icon name="eva-file-text-outline" class="icon" /></h2>
+      <p class="stat"><q-icon name="eva-list-outline" class="icon" />Total de Faturas: <span class="value">{{
+        invoiceStats.total }}</span></p>
+      <p class="stat"><q-icon name="eva-calculator-outline" class="icon" />Valor Médio das Faturas: <span
+          class="value">{{ invoiceStats.average }} MZN</span> </p>
     </div>
 
-    <!--Graficos-->
-    <div class="bar-chart-container">
-      <svg ref="chart"></svg>
-    </div>
+
 
 
     <!-- Seção de Faturas Recentes -->
@@ -21,13 +19,16 @@
       <q-list bordered separator class="styled-invoices-list">
         <q-item clickable class="styled-invoice-item" v-for="invoice in recentInvoices" :key="invoice.id">
           <q-item-section avatar>
-            <q-icon name="eva-file-outline" class="invoice-icon" />
+            <q-icon name="eva-checkmark-circle-2-outline" class="invoice-icon" />
           </q-item-section>
           <q-item-section>
             <p class="invoice-name">{{ invoice.name }}</p>
           </q-item-section>
           <q-item-section side>
-            <p class="invoice-date">{{ invoice.date }}</p>
+            <p class="invoice-amount">{{ invoice.amount }}</p>
+          </q-item-section>
+          <q-item-section side>
+            <p class="invoice-date">{{ invoice.dueDate }}</p>
           </q-item-section>
         </q-item>
       </q-list>
@@ -35,32 +36,41 @@
 
     <!-- Seção de Estatísticas -->
     <div class="statistics-container">
-    <h2 class="text-h6 title">Estatísticas</h2>
-    <div class="row justify-between stats-row" style="flex-direction: row; flex-wrap: wrap;">
-      <q-card flat bordered class="styled-stat-card" v-for="statistic in statistics" :key="statistic.id">
-        <q-icon :name="`eva-${statistic.icon}`" class="stat-icon" />
-        <p class="text-h6 stat-value">{{ statistic.value }}</p>
-        <p class="stat-label">{{ statistic.label }}</p>
-      </q-card>
+      <h2 class="text-h6 title">Estatísticas</h2>
+      <div class="row justify-between stats-row" style="flex-direction: row; flex-wrap: wrap;">
+        <q-card flat bordered class="styled-stat-card" v-for="statistic in statistics" :key="statistic.id">
+          <q-icon :name="`eva-${statistic.icon}`" class="stat-icon" />
+          <p class="text-h6 stat-value">{{ statistic.value }}</p>
+          <p class="stat-label">{{ statistic.label }}</p>
+        </q-card>
+      </div>
+      <!--Graficos-->
+      <h2 class="text-h6 title">Faturas emitidas</h2>
+      <div class="bar-chart-container">
+        <svg ref="chart"></svg>
+      </div>
     </div>
-  </div>
 
     <!-- Seção de Tarefas Pendentes -->
     <div>
-      <h2 class="text-h6">Faturas Pendentes</h2>
+      <h2 class="text-h6 title">Faturas Pendentes</h2>
       <q-list bordered separator class="styled-invoices-list">
-        <q-item clickable class="styled-invoice-item" v-for="task in pendingTasks" :key="task.id">
+        <q-item clickable class="styled-invoice-item" v-for="invoice in pendingInvoices" :key="invoice.id">
           <q-item-section avatar>
             <q-icon name="eva-checkmark-circle-2-outline" class="invoice-icon" />
           </q-item-section>
           <q-item-section>
-            <p class="invoice-name">{{ task.name }}</p>
+            <p class="invoice-name">{{ invoice.name }}</p>
           </q-item-section>
           <q-item-section side>
-            <p class="invoice-date">{{ task.dueDate }}</p>
+            <p class="invoice-amount">{{ invoice.amount }}</p>
+          </q-item-section>
+          <q-item-section side>
+            <p class="invoice-date">{{ invoice.dueDate }}</p>
           </q-item-section>
         </q-item>
       </q-list>
+      <q-btn label="Ver mais" flat dense class="view-more-button" @click="viewMore" />
     </div>
 
 
@@ -77,11 +87,12 @@ export default {
   extends: Bar,
   data() {
     return {
+      invoices: [],
       showWelcomeCard: true,
       recentInvoices: [
-        { id: 1, name: 'Fatura 1', date: '12 Jan 2024' },
-        { id: 2, name: 'Fatura 2', date: '12 Jan 2024' },
-        { id: 3, name: 'Fatura 3', date: '12 Jan 2024' },
+        { id: 1, name: 'Fatura 1', amount: '500 MZN', dueDate: '12 Jan 2024' },
+        { id: 2, name: 'Fatura 1', amount: '300 MZN', dueDate: '12 Jan 2024' },
+        { id: 3, name: 'Fatura 1', amount: '100 MZN', dueDate: '12 Jan 2024' },
         // Adicione mais faturas conforme necessário
       ],
       invoiceStats: {
@@ -103,10 +114,10 @@ export default {
         },
         // Adicione mais estatísticas conforme necessário
       ],
-      pendingTasks: [
-        { id: 1, name: 'Fatura 1', dueDate: '12 Jan 2024' },
-        { id: 2, name: 'Fatura 1', dueDate: '12 Jan 2024' },
-        { id: 3, name: 'Fatura 1', dueDate: '12 Jan 2024' },
+      pendingInvoices: [
+        { id: 1, name: 'Fatura 1', amount: '500 MZN', dueDate: '12 Jan 2024' },
+        { id: 2, name: 'Fatura 1', amount: '300 MZN', dueDate: '12 Jan 2024' },
+        { id: 3, name: 'Fatura 1', amount: '100 MZN', dueDate: '12 Jan 2024' },
         // Adicione mais tarefas conforme necessário
       ],
 
@@ -114,11 +125,14 @@ export default {
     };
   },
   mounted() {
+    this.addInvoice({ amount: 100 });
+    this.addInvoice({ amount: 200 });
+    this.addInvoice({ amount: 300 });
     this.createBarChart(window.innerWidth * 0.8); // 80% da largura da janela
 
-  window.addEventListener('resize', () => {
-    this.createBarChart(window.innerWidth * 0.8);
-  });
+    window.addEventListener('resize', () => {
+      this.createBarChart(window.innerWidth * 0.8);
+    });
 
     setTimeout(() => {
       this.showWelcomeCard = false;
@@ -130,69 +144,94 @@ export default {
     this.calculateInvoiceStats();
 
   },
+  computed: {
+    invoiceStats() {
+      const total = this.invoices.length;
+      const average = this.invoices.reduce((sum, invoice) => sum + invoice.amount, 0) / total;
+      return {
+        total,
+        average: average.toFixed(2), // Arredonda a média para duas casas decimais
+      };
+    },
+  },
 
   methods: {
+
+    calculateInvoicesPerMonth() {
+      const invoicesPerMonth = Array(12).fill(0); // Inicializa um array com 12 zeros
+
+      this.invoices.forEach(invoice => {
+        const month = new Date(invoice.date).getMonth(); // Obtenha o mês da data da fatura (0 = Jan, 1 = Fev, ..., 11 = Dez)
+        invoicesPerMonth[month]++;
+      });
+
+      return invoicesPerMonth;
+    },
+    addInvoice(invoice) {
+      this.invoices.push(invoice);
+      this.calculateInvoiceStats(); // Recalcule as estatísticas sempre que uma nova fatura for adicionada
+    },
     createBarChart() {
-  const data = [40, 20, 12, 39];
-  const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+      const data = this.calculateInvoicesPerMonth();
+      //const data = [40, 20, 12, 39];
+      const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      let width = this.$refs.chart.parentElement.clientWidth - margin.left - margin.right;
+      let height = 200 - margin.top - margin.bottom;
 
-  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-  let width = this.$refs.chart.parentElement.clientWidth - margin.left - margin.right;
-  let height = 200 - margin.top - margin.bottom;
+      const svg = d3.select(this.$refs.chart)
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  const svg = d3.select(this.$refs.chart)
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      const x = d3.scaleBand()
+        .range([0, width])
+        .domain(labels)
+        .padding(0.1);
 
-  const x = d3.scaleBand()
-    .range([0, width])
-    .domain(labels)
-    .padding(0.1);
+      const y = d3.scaleLinear()
+        .range([height, 0])
+        .domain([0, d3.max(data)]);
 
-  const y = d3.scaleLinear()
-    .range([height, 0])
-    .domain([0, d3.max(data)]);
+      svg.append('g')
+        .attr('class', 'axis x')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x));
 
-    svg.append('g')
-  .attr('class', 'axis x')
-  .attr('transform', 'translate(0,' + height + ')')
-  .call(d3.axisBottom(x));
+      svg.append('g')
+        .attr('class', 'axis y')
+        .call(d3.axisLeft(y));
 
-svg.append('g')
-  .attr('class', 'axis y')
-  .call(d3.axisLeft(y));
+      svg.selectAll('.bar')
+        .data(data)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', function (d, i) { return x(labels[i]); })
+        .attr('width', x.bandwidth())
+        .attr('y', function (d) { return y(d); })
+        .attr('height', function (d) { return height - y(d); });
 
-  svg.selectAll('.bar')
-    .data(data)
-    .enter().append('rect')
-    .attr('class', 'bar')
-    .attr('x', function(d, i) { return x(labels[i]); })
-    .attr('width', x.bandwidth())
-    .attr('y', function(d) { return y(d); })
-    .attr('height', function(d) { return height - y(d); });
+      // Função de redimensionamento
+      window.addEventListener('resize', resize);
 
-  // Função de redimensionamento
-  window.addEventListener('resize', resize);
+      function resize() {
+        // Atualiza a largura
+        width = parseInt(d3.select(this.$refs.chart).style('width'), 10) - margin.left - margin.right;
 
-  function resize() {
-    // Atualiza a largura
-    width = parseInt(d3.select(this.$refs.chart).style('width'), 10) - margin.left - margin.right;
+        // Atualiza a escala x
+        x.range([0, width]);
 
-    // Atualiza a escala x
-    x.range([0, width]);
+        // Atualiza os eixos
+        svg.select('.x-axis').call(d3.axisBottom(x));
+        svg.select('.y-axis').call(d3.axisLeft(y));
 
-    // Atualiza os eixos
-    svg.select('.x-axis').call(d3.axisBottom(x));
-    svg.select('.y-axis').call(d3.axisLeft(y));
-
-    // Atualiza as barras
-    svg.selectAll('.bar')
-      .attr('x', function(d, i) { return x(labels[i]); })
-      .attr('width', x.bandwidth());
-  }
-},
+        // Atualiza as barras
+        svg.selectAll('.bar')
+          .attr('x', function (d, i) { return x(labels[i]); })
+          .attr('width', x.bandwidth());
+      }
+    },
 
 
 
@@ -294,7 +333,8 @@ svg.append('g')
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   margin: 5px;
   padding: 5px;
-  flex: 1 0 21%; /* Isso fará com que os cartões ocupem pelo menos 21% da linha, mas também permitirá que eles cresçam para preencher o espaço disponível. */
+  flex: 1 0 21%;
+  /* Isso fará com que os cartões ocupem pelo menos 21% da linha, mas também permitirá que eles cresçam para preencher o espaço disponível. */
 }
 
 .q-icon {
@@ -381,9 +421,70 @@ svg.append('g')
 }
 
 
+.invoice-overview {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.title {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.stat {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.icon {
+  color: #007bff;
+  margin-right: 5px;
+}
+
+.value {
+  color: #007bff;
+  font-weight: bold;
+}
 
 
 
+.pending-tasks {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.title {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.styled-invoice-item {
+  margin-bottom: 10px;
+}
+
+.invoice-icon {
+  color: #007bff;
+}
+
+.invoice-name {
+  font-weight: bold;
+}
+
+.invoice-amount {
+  color: #007bff;
+}
+
+.invoice-date {
+  color: #666;
+}
+
+.view-more-button {
+  margin-top: 20px;
+  color: #007bff;
+}
 </style>
 
 <style>
