@@ -57,7 +57,7 @@
       <q-list bordered separator class="styled-invoices-list">
         <q-item clickable class="styled-invoice-item" v-for="invoice in pendingInvoices" :key="invoice.id">
           <q-item-section avatar>
-            <q-icon name="eva-checkmark-circle-2-outline" class="invoice-icon" />
+            <q-icon name="eva-clock-outline" class="invoice-icon" />
           </q-item-section>
           <q-item-section>
             <p class="invoice-name">{{ invoice.name }}</p>
